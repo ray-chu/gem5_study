@@ -375,10 +375,10 @@ BaseSimpleCPU::preExecute()
 
     // check for instruction-count-based events
     comInstEventQueue[0]->serviceEvents(numInst);                                   //service Thread 0's next instruction event
-    system->instEventQueue.serviceEvents(system->totalNumInsts);
+    system->instEventQueue.serviceEvents(system->totalNumInsts);                    //service system's global instruction event
 
     // decode the instruction
-    inst = gtoh(inst);
+    inst = gtoh(inst);                                  //Swap bytes of inst to satisfy big or little endian byte order
 
     TheISA::PCState pcState = thread->pcState();
 
