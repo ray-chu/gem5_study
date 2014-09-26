@@ -41,11 +41,11 @@ namespace X86ISAInst
     {
       protected:
 
-        typedef StaticInstPtr (*GenFunc)(StaticInstPtr);
+	    typedef StaticInstPtr (*GenFunc)(StaticInstPtr);         //this define a pointer type that point to a function take a StaticInstPtr object as parameter and return a StaticInstPtr object. The type's name is GenFunc. 
 
         static const MicroPC numMicroops;
 
-        GenFunc * genFuncs;
+	    GenFunc * genFuncs;                        //define a GenFunc pointer. This pointer is the pointer's pointer for a certain function
 
       public:
         //Constructor.

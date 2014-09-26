@@ -489,6 +489,8 @@ AtomicSimpleCPU::tick()
 
         TheISA::PCState pcState = thread->pcState();
 
+	//The following parts before preExecute() are inst fetch stages
+
         bool needToFetch = !isRomMicroPC(pcState.microPC()) &&                     
 		!curMacroStaticInst;                                       //StaticInstPtr object. Defined in cpu/simple/base.hh. StaticInstPtr typedef in /cpu/static_inst_fwd.hh(this file includes(static_inst.hh includes(static_inst_fwd.hh)))
         if (needToFetch) {
@@ -526,10 +528,10 @@ AtomicSimpleCPU::tick()
                 //}
             }
 
-            preExecute();               //BaseSimpleCPU::preExecute()
+            preExecute();               //BaseSimpleCPU::preExecute() which decode MachInst and save decoded microInst into curStaticInst
 
             if (curStaticInst) {
-                fault = curStaticInst->execute(this, traceData);
+		    fault = curStaticInst->execute(this, traceData);    //class RefCountingPtr overload operator ->, which returns a pointer. Anyway, this statement calls StaticInst::execute()
 
                 // keep an instruction count
                 if (fault == NoFault)
@@ -539,7 +541,7 @@ AtomicSimpleCPU::tick()
                     traceData = NULL;
                 }
 
-                postExecute();
+                postExecute();                                                            //postExecute profiles data
             }
 
             // @todo remove me after debugging with legion done
@@ -571,7 +573,7 @@ AtomicSimpleCPU::tick()
 
         }
         if(fault != NoFault || !stayAtPC)
-            advancePC(fault);
+		advancePC(fault);                                             //I guess it implement as set PCState._pc=PCState._npc
     }
 
     if (tryCompleteDrain())
@@ -582,7 +584,7 @@ AtomicSimpleCPU::tick()
         latency = clockPeriod();
 
     if (_status != Idle)
-        schedule(tickEvent, curTick() + latency);
+	    schedule(tickEvent, curTick() + latency);                             ///insert a new tick event into mainEventQueue.
 }
 
 
